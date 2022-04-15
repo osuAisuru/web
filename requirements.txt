@@ -1,0 +1,6 @@
+aioredis
+fastapi
+motor
+orjson
+uvicorn
+uvloop
