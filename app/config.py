@@ -13,5 +13,7 @@ SERVER_PORT: int = cfg("SERVER_PORT", cast=int)
 
 DEBUG: bool = cfg("DEBUG", cast=bool)
 
+API_SECRET: str = cfg("API_SECRET")
+
 # do NOT change
 VERSION = "0.1.0"

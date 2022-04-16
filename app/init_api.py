@@ -51,7 +51,7 @@ def init_events(asgi_app: FastAPI) -> None:
         request: Request,
         e: RequestValidationError,
     ) -> Response:
-        log.warning(f"Validation error:\n{pprint.pformat(e.errors())}")
+        log.warning(f"Validation error on {request.url}:\n{pprint.pformat(e.errors())}")
 
         return ORJSONResponse(
             content=jsonable_encoder(e.errors()),
