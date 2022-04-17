@@ -4,6 +4,7 @@ from fastapi import APIRouter
 from fastapi import Response
 
 from . import beatmaps
+from . import favourites
 from . import friends
 from . import leaderboards
 from . import redis
@@ -31,5 +32,12 @@ router.add_api_route("/web/osu-getfriends.php", friends.get_friends)
 router.add_api_route(
     "/web/osu-getbeatmapinfo.php",
     beatmaps.get_beatmap_info,
+    methods=["POST"],
+)
+
+router.add_api_route("/web/osu-getfavourites.php", favourites.get_favourites)
+router.add_api_route(
+    "/web/osu-addfavourite.php",
+    favourites.add_favourite,
     methods=["POST"],
 )
