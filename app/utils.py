@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from functools import cache
 from typing import Any
 from typing import Awaitable
 from typing import Callable
@@ -44,7 +43,6 @@ async def get_user(name: str, password_md5: str) -> Optional[User]:
             return User(**json["user"])
 
 
-@cache
 def authenticate_user(
     param_function: Callable[..., Any],
     name_arg: str = "u",
