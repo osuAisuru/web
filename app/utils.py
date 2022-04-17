@@ -66,6 +66,13 @@ def authenticate_user(
     return wrapper
 
 
+def get_media_type(extension: str) -> Optional[str]:
+    if extension in ("jpg", "jpeg"):
+        return "image/jpeg"
+    elif extension == "png":
+        return "image/png"
+
+
 def has_jpeg_headers_and_trailers(data_view: memoryview) -> bool:
     return data_view[:4] == b"\xff\xd8\xff\xe0" and data_view[6:11] == b"JFIF\x00"
 

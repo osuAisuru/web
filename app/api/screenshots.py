@@ -2,14 +2,16 @@ from __future__ import annotations
 
 import secrets
 from pathlib import Path
+from typing import Literal
 
 from fastapi import Depends
 from fastapi import File
 from fastapi import Form
-from fastapi import Query
+from fastapi import Path as URLPath
 from fastapi import Response
 from fastapi import status
 from fastapi import UploadFile
+from fastapi.responses import FileResponse
 
 import app.utils
 import log
@@ -25,7 +27,7 @@ for path in (DATA_PATH, SCREENSHOTS_PATH):
 
 
 async def upload_screenshot(
-    user: User = Depends(authenticate_user(Query, "u", "p")),
+    user: User = Depends(authenticate_user(Form, "u", "p")),
     endpoint_version: int = Form(..., alias="v"),
     screenshot_file: UploadFile = File(..., alias="ss"),
 ):
@@ -61,3 +63,21 @@ async def upload_screenshot(
     ss_file.write_bytes(screenshot_bytes)
     log.info(f"{user} uploaded screenshot {filename}")
     return Response(filename.encode())
+
+
+async def view_screenshot(
+    screenshot_id: str = URLPath(..., regex=r"[a-zA-Z0-9-_]{8}"),
+    extension: Literal["jpg", "jpeg", "png"] = URLPath(...),
+):
+    ss_file = SCREENSHOTS_PATH / f"{screenshot_id}.{extension}"
+
+    if not ss_file.exists():
+        return Response(
+            content=b"Screenshot not found",
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
+
+    return FileResponse(
+        path=ss_file,
+        media_type=app.utils.get_media_type(extension),
+    )

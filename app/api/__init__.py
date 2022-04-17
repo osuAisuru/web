@@ -7,7 +7,7 @@ from . import friends
 from . import leaderboards
 from . import redis
 from . import score_submission
-from . import screenshot
+from . import screenshots
 
 router = APIRouter(default_response_class=Response)
 router.add_api_route("/web/osu-osz2-getscores.php", leaderboards.get_leaderboard)
@@ -18,7 +18,8 @@ router.add_api_route(
 )
 router.add_api_route(
     "/web/osu-screenshot.php",
-    screenshot.upload_screenshot,
+    screenshots.upload_screenshot,
     methods=["POST"],
 )
 router.add_api_route("/web/osu-getfriends.php", friends.get_friends)
+router.add_api_route("/ss/{screenshot_id}.{extension}", screenshots.view_screenshot)
