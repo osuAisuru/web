@@ -1,6 +1,8 @@
 aioredis
 fastapi
+git+https://github.com/osuAisuru/aisuru-pp-py
 motor
 orjson
+py3rijndael
 uvicorn
 uvloop

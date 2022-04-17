@@ -12,6 +12,7 @@ from fastapi.responses import Response
 from motor.motor_asyncio import AsyncIOMotorClient
 from starlette.middleware.base import RequestResponseEndpoint
 
+import app.api
 import app.config
 import app.state
 import log
@@ -24,12 +25,14 @@ def init_events(asgi_app: FastAPI) -> None:
         app.state.services.database = app.state.services.client.aisuru
 
         await app.state.services.redis.initialize()
+        await app.api.redis.initialise_pubsubs()
 
         log.info("Web is running!")
 
     @asgi_app.on_event("shutdown")
     async def on_shutdown() -> None:
         await app.state.services.redis.close()
+        await app.state.cancel_tasks()
 
         log.info("Web has stopped!")
 

@@ -12,8 +12,36 @@ from fastapi import HTTPException
 from fastapi import status
 
 import app.config
+from app.constants.privileges import Privileges
 from app.constants.status import Status
+from app.objects.geolocation import Geolocation
 from app.objects.user import User
+
+
+async def get_user(name: str, password_md5: str) -> Optional[User]:
+    async with ClientSession(connector=TCPConnector(verify_ssl=False)) as session:
+        async with session.get(
+            f"http://127.0.0.1:9823/user-auth",
+            headers={"Host": f"cho_api.{app.config.SERVER_DOMAIN}"},
+            params={
+                "name": name,
+                "password": password_md5,
+                "key": str(app.config.API_SECRET),
+            },
+        ) as resp:
+            if not resp:
+                return None
+
+            json = await resp.json()
+            if json["status"] != "ok":
+                return None
+
+            json["user"]["status"] = Status.from_dict(json["user"]["status"])
+            json["user"]["privileges"] = Privileges(json["user"]["privileges"])
+            json["user"]["geolocation"] = Geolocation.from_dict(
+                json["user"]["geolocation"],
+            )
+            return User(**json["user"])
 
 
 @cache
@@ -27,29 +55,12 @@ def authenticate_user(
         name: str = param_function(..., alias=name_arg),
         password_md5: str = param_function(..., alias=password_arg),
     ):
-        async with ClientSession(connector=TCPConnector(verify_ssl=False)) as session:
-            async with session.get(
-                f"https://cho_api.{app.config.SERVER_DOMAIN}/user-auth",
-                params={
-                    "name": name,
-                    "password": password_md5,
-                    "key": app.config.API_SECRET,
-                },
-            ) as resp:
-                if not resp:
-                    raise HTTPException(
-                        status_code=status.HTTP_401_UNAUTHORIZED,
-                        detail=error_text,
-                    )
+        if not (user := await get_user(name, password_md5)):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=error_text,
+            )
 
-                json = await resp.json()
-                if json["status"] != "ok":
-                    raise HTTPException(
-                        status_code=status.HTTP_401_UNAUTHORIZED,
-                        detail=error_text,
-                    )
-
-                json["user"]["status"] = Status.from_dict(json["user"]["status"])
-                return User(**json["user"])
+        return user
 
     return wrapper
