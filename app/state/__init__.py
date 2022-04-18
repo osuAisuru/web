@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 
 import log
+from . import cache
 from . import services
 from app.typing import PubsubHandler
 

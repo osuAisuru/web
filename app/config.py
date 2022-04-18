@@ -19,5 +19,7 @@ OSU_API_KEY: Secret = cfg("OSU_API_KEY", cast=Secret)
 
 MIRROR_URL: str = cfg("MIRROR_URL")
 
+INGAME_REGISTRATION: bool = cfg("INGAME_REGISTRATION", cast=bool)
+
 # do NOT change
 VERSION = "0.1.0"

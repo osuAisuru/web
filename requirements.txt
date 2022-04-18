@@ -1,5 +1,6 @@
 aioredis
 fastapi
+geoip2
 git+https://github.com/osuAisuru/aisuru-pp-py
 motor
 orjson

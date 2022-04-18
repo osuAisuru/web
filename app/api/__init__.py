@@ -16,6 +16,7 @@ from . import lastfm
 from . import leaderboards
 from . import ratings
 from . import redis
+from . import registration
 from . import replays
 from . import score_submission
 from . import screenshots
@@ -60,6 +61,12 @@ router.add_api_route("/web/osu-rate.php", ratings.osu_rate)
 router.add_api_route(
     "/web/osu-comment.php",
     comments.osu_comment,
+    methods=["POST"],
+)
+
+router.add_api_route(
+    "/users",
+    registration.user_registration,
     methods=["POST"],
 )
 
