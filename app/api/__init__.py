@@ -49,5 +49,6 @@ router.add_api_route("/web/lastfm.php", lastfm.last_fm)
 
 router.add_api_route("/web/osu-search.php", direct.osu_direct)
 router.add_api_route("/web/osu-search-set.php", direct.beatmap_card)
+router.add_api_route("/d/{set_id}", direct.download_map)
 
 router.add_api_route("/web/osu-getreplay.php", replays.get_replay)

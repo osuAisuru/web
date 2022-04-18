@@ -6,6 +6,7 @@ from urllib.parse import unquote_plus
 
 from aiohttp import ClientSession
 from fastapi import Depends
+from fastapi import Path
 from fastapi import Query
 from fastapi import status
 from fastapi.responses import RedirectResponse
@@ -74,8 +75,6 @@ async def osu_direct(
         if not bmap["ChildrenBeatmaps"]:
             continue
 
-        bmap["HasVideo"] = "0"  # XX: does mino support this?
-
         diff_sorted_maps = sorted(
             bmap["ChildrenBeatmaps"],
             key=lambda x: x["DifficultyRating"],
@@ -110,3 +109,10 @@ async def beatmap_card(
         "{status}|10.0|{last_update}|{set_id}|"
         "0|0|0|0|0".format(**beatmap.dict())
     ).encode()
+
+
+async def download_map(set_id: str = Path(...)):
+    return RedirectResponse(
+        url=f"{app.config.MIRROR_URL}/d/{set_id}",
+        status_code=status.HTTP_301_MOVED_PERMANENTLY,
+    )
