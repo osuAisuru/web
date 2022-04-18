@@ -88,6 +88,8 @@ class Score:
     client_flags: ClientFlags
     client_checksum: str
 
+    replay_views: int
+
     rank: int = 0
     old_best: Optional[Score] = None
 
@@ -130,10 +132,11 @@ class Score:
             "time_elapsed": self.time_elapsed,
             "client_flags": self.client_flags.value,
             "client_checksum": self.client_checksum,
+            "replay_views": self.replay_views,
         }
 
     @classmethod
-    async def from_row(cls, row: dict[str, Any], calculate_rank: bool = True):
+    async def from_row(cls, row: dict[str, Any]):
         score = Score(
             id=row["score"],
             map_md5=row["map_md5"],
@@ -162,6 +165,7 @@ class Score:
             time_elapsed=row["time_elapsed"],
             client_flags=ClientFlags(row["client_flags"]),
             client_checksum=row["client_checksum"],
+            replay_views=row["replay_views"],
         )
 
         return score
@@ -196,4 +200,5 @@ class Score:
             time_elapsed=0,  # set later
             client_flags=ClientFlags(data[15].count(" ") & ~4),
             client_checksum=data[0],
+            replay_views=0,  # new score so its gonna be 0
         )

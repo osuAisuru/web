@@ -37,7 +37,7 @@ async def osu_direct(
 ):
     search_url = f"{app.config.MIRROR_URL}/api/search"
 
-    params: dict[str, Any] = {"amount": 100, "offset": page_num * 100}
+    params: dict[str, Any] = {"amount": 101, "offset": page_num}
 
     if unquote_plus(query) not in ("Newest", "Top Rated", "Most Played"):
         params["query"] = query
@@ -48,18 +48,17 @@ async def osu_direct(
     if ranked_status != 4:
         params["status"] = RankedStatus.from_direct(ranked_status).osu_api
 
-    if False:  # TODO: workout why their response isn't liked by osu!
-        if "catboy.best" in search_url:
-            params["raw"] = "1"  # mino cana format to direct for us
+    if "catboy.best" in search_url:
+        params["raw"] = "1"  # mino can format to direct for us
 
-        if "raw" in params:
-            param_str = "&".join(f"{k}={v}" for k, v in params.items())
-            url = f"{search_url}?{param_str}"
+    if "raw" in params:
+        param_str = "&".join(f"{k}={v}" for k, v in params.items())
+        url = f"{search_url}?{param_str}"
 
-            return RedirectResponse(
-                url=url,
-                status_code=status.HTTP_301_MOVED_PERMANENTLY,
-            )
+        return RedirectResponse(
+            url=url,
+            status_code=status.HTTP_301_MOVED_PERMANENTLY,
+        )
 
     async with ClientSession() as session:
         async with session.get(search_url, params=params) as response:

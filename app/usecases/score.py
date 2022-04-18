@@ -100,3 +100,8 @@ def calculate_status(score: Score) -> None:
             score.status = ScoreStatus.SUBMITTED
     else:
         score.status = ScoreStatus.BEST
+
+
+async def increment_replay_views(score_id: int) -> None:
+    scores_collection = app.state.services.database.scores
+    await scores_collection.update_one({"id": score_id}, {"$inc": {"replay_views": 1}})

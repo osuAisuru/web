@@ -224,9 +224,8 @@ async def submit_score(
             {"$set": {"status": 1}},
         )
 
-    result = await scores_collection.insert_one(score.dict())
-    inserted_score = await scores_collection.find_one({"_id": result.inserted_id})
-    score.id = inserted_score["id"]
+    score.id = await scores_collection.count_documents({}) + 1
+    await scores_collection.insert_one(score.dict())
 
     if score.passed:
         replay_data = await replay_file.read()
