@@ -9,6 +9,7 @@ from . import favourites
 from . import friends
 from . import lastfm
 from . import leaderboards
+from . import ratings
 from . import redis
 from . import replays
 from . import score_submission
@@ -42,7 +43,6 @@ router.add_api_route("/web/osu-getfavourites.php", favourites.get_favourites)
 router.add_api_route(
     "/web/osu-addfavourite.php",
     favourites.add_favourite,
-    methods=["POST"],
 )
 
 router.add_api_route("/web/lastfm.php", lastfm.last_fm)
@@ -52,3 +52,5 @@ router.add_api_route("/web/osu-search-set.php", direct.beatmap_card)
 router.add_api_route("/d/{set_id}", direct.download_map)
 
 router.add_api_route("/web/osu-getreplay.php", replays.get_replay)
+
+router.add_api_route("/web/osu-rate.php", ratings.osu_rate)
