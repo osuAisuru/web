@@ -4,6 +4,7 @@ from fastapi import APIRouter
 from fastapi import Response
 
 from . import beatmaps
+from . import comments
 from . import direct
 from . import favourites
 from . import friends
@@ -40,10 +41,7 @@ router.add_api_route(
 )
 
 router.add_api_route("/web/osu-getfavourites.php", favourites.get_favourites)
-router.add_api_route(
-    "/web/osu-addfavourite.php",
-    favourites.add_favourite,
-)
+router.add_api_route("/web/osu-addfavourite.php", favourites.add_favourite)
 
 router.add_api_route("/web/lastfm.php", lastfm.last_fm)
 
@@ -54,3 +52,9 @@ router.add_api_route("/d/{set_id}", direct.download_map)
 router.add_api_route("/web/osu-getreplay.php", replays.get_replay)
 
 router.add_api_route("/web/osu-rate.php", ratings.osu_rate)
+
+router.add_api_route(
+    "/web/osu-comment.php",
+    comments.osu_comment,
+    methods=["POST"],
+)
