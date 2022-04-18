@@ -35,6 +35,23 @@ async def fetch_by_md5(md5: str) -> Optional[Beatmap]:
         return beatmap
 
 
+async def fetch_by_id(id: int) -> Optional[Beatmap]:
+    if beatmap := id_from_cache(id):
+        return beatmap
+
+    if beatmap := await id_from_database(id):
+        md5_cache[beatmap.md5] = beatmap
+        id_cache[beatmap.id] = beatmap
+
+        return beatmap
+
+    if beatmap := await id_from_api(id):
+        md5_cache[beatmap.md5] = beatmap
+        id_cache[beatmap.id] = beatmap
+
+        return beatmap
+
+
 async def fetch_by_set_id(set_id: int) -> Optional[list[Beatmap]]:
     if beatmaps := set_from_cache(set_id):
         return beatmaps
@@ -74,9 +91,29 @@ def md5_from_cache(md5: str) -> Optional[Beatmap]:
     return md5_cache.get(md5)
 
 
+def id_from_cache(id: int) -> Optional[Beatmap]:
+    return id_cache.get(id)
+
+
 async def md5_from_database(md5: str) -> Optional[Beatmap]:
     map_collection = app.state.services.database.maps
     map_document = await map_collection.find_one({"md5": md5})
+
+    if not map_document:
+        return None
+
+    # move into parse function perhaps?
+    map_document["status"] = RankedStatus(int(map_document["status"]))
+    map_document["mode"] = Mode(int(map_document["mode"]))
+    map_document["last_update"] = datetime.fromisoformat(map_document["last_update"])
+    map_document.pop("_id")
+
+    return Beatmap(**map_document)
+
+
+async def id_from_database(id: int) -> Optional[Beatmap]:
+    map_collection = app.state.services.database.maps
+    map_document = await map_collection.find_one({"id": id})
 
     if not map_document:
         return None
@@ -145,6 +182,30 @@ async def md5_from_api(md5: str) -> Optional[Beatmap]:
 
     for beatmap in beatmaps:
         if beatmap.md5 == md5:
+            return beatmap
+
+
+async def id_from_api(id: int) -> Optional[Beatmap]:
+    async with ClientSession() as session:
+        async with session.get(
+            GET_BEATMAP_URL,
+            params={"k": str(app.config.OSU_API_KEY), "b": id},
+        ) as response:
+            if not response or response.status != status.HTTP_200_OK:
+                return None
+
+            response_json = await response.json()
+            if not response_json:
+                return None
+
+    beatmaps = parse_from_osu_api(response_json)
+
+    for beatmap in beatmaps:
+        await save_to_database(beatmap)
+        add_to_set_cache(beatmap)
+
+    for beatmap in beatmaps:
+        if beatmap.id == id:
             return beatmap
 
 

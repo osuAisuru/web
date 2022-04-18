@@ -7,5 +7,5 @@ from app.objects.user import User
 from app.utils import authenticate_user
 
 
-async def get_friends(user: User = Depends(authenticate_user(Query, "u", "p"))):
+async def get_friends(user: User = Depends(authenticate_user(Query, "u", "h"))):
     return "\n".join(map(str, user.friends)).encode()

@@ -45,10 +45,10 @@ async def get_beatmap_info(
 
         grades = ["N", "N", "N", "N"]
 
-        using_relax = user.status.mode.as_vn() != user.status.mode.value
+        using_relax = user.status.mode > Mode.MANIA
 
         if using_relax:
-            modes = [Mode.STD_RX, Mode.TAIKO_RX, Mode.CATCH_RX]
+            modes = [Mode.STD_RX, Mode.TAIKO_RX, Mode.CATCH_RX, Mode.MANIA]
         else:
             modes = [Mode.STD, Mode.TAIKO, Mode.CATCH, Mode.MANIA]
 

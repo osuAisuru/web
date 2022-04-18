@@ -4,6 +4,7 @@ from fastapi import APIRouter
 from fastapi import Response
 
 from . import beatmaps
+from . import direct
 from . import favourites
 from . import friends
 from . import lastfm
@@ -44,3 +45,6 @@ router.add_api_route(
 )
 
 router.add_api_route("/web/lastfm.php", lastfm.last_fm)
+
+router.add_api_route("/web/osu-search.php", direct.osu_direct)
+router.add_api_route("/web/osu-search-set.php", direct.beatmap_card)

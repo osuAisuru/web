@@ -17,5 +17,7 @@ API_SECRET: Secret = cfg("API_SECRET", cast=Secret)
 
 OSU_API_KEY: Secret = cfg("OSU_API_KEY", cast=Secret)
 
+MIRROR_URL: str = cfg("MIRROR_URL")
+
 # do NOT change
 VERSION = "0.1.0"
