@@ -103,7 +103,7 @@ class Score:
 
         return (
             f"{self.id}|{username}|{score}|{self.max_combo}|{self.n50}|{self.n100}|{self.n300}|{self.nmiss}|"
-            f"{self.nkatu}|{self.ngeki}|{self.perfect}|{int(self.mods)}|{self.user_id}|{rank}|{timestamp}|"
+            f"{self.nkatu}|{self.ngeki}|{int(self.perfect)}|{int(self.mods)}|{self.user_id}|{rank}|{timestamp}|"
             "1"  # has replay
         )
 
@@ -138,7 +138,7 @@ class Score:
     @classmethod
     async def from_row(cls, row: dict[str, Any]):
         score = Score(
-            id=row["score"],
+            id=row["id"],
             map_md5=row["map_md5"],
             user_id=row["user_id"],
             username=row["username"],
