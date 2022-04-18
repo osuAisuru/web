@@ -6,6 +6,7 @@ from fastapi import Response
 from . import beatmaps
 from . import favourites
 from . import friends
+from . import lastfm
 from . import leaderboards
 from . import redis
 from . import score_submission
@@ -41,3 +42,5 @@ router.add_api_route(
     favourites.add_favourite,
     methods=["POST"],
 )
+
+router.add_api_route("/web/lastfm.php", lastfm.last_fm)
