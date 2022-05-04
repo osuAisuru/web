@@ -13,6 +13,7 @@ import app.usecases
 import log
 from app.constants.privileges import Privileges
 from app.objects.beatmap import Beatmap
+from app.objects.beatmap import RankedStatus
 from app.objects.leaderboard import Leaderboard
 from app.typing import PubsubHandler
 
@@ -44,6 +45,25 @@ async def handle_privileges_change(payload: str) -> None:
                 score.user_priv = Privileges(data["privileges"])
 
     log.info(f"Updated privileges for user ID {data['id']}")
+
+
+class MapStatusUpdate(TypedDict):
+    md5: str
+    new_status: int
+
+
+@register_pubsub("map-status")
+async def handle_map_status_change(payload: str) -> None:
+    data: MapStatusUpdate = orjson.loads(payload)
+
+    cached_map = app.usecases.beatmap.md5_from_cache(data["md5"])
+    if not cached_map:
+        return
+
+    cached_map.status = RankedStatus(data["new_status"])
+    cached_map.frozen = True
+
+    await app.usecases.beatmap.save_to_database(cached_map)
 
 
 class RedisMessage(TypedDict):
