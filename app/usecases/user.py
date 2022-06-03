@@ -79,6 +79,7 @@ async def restrict(user: User, reason: str) -> None:
                 "actions": {
                     "action": "restrict",
                     "sender": BOT_USERNAME,
+                    "info": reason,
                 },
             },
         },
